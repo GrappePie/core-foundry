@@ -1,0 +1,97 @@
+name: Scaffold new module
+on:
+  workflow_dispatch:
+    inputs:
+      module_name:
+        description: 'Name of the new module (kebab-case)'
+        required: true
+
+jobs:
+  generate_module:
+    runs-on: ubuntu-latest
+    env:
+      MOD: ${{ github.event.inputs.module_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Scaffold module files
+        run: |
+          # Carpeta y archivos básicos
+          mkdir -p src/modules/$MOD
+          cat > src/modules/$MOD/config.ts <<EOF
+          import ${MOD^}UI from './ui';
+
+          export const ${MOD^}Module = {
+            id: '$MOD',
+            nombre: '${MOD^}',
+            icono: '🧩',
+            endpoint: '/api/$MOD',
+            Componente: ${MOD^}UI
+          };
+          EOF
+
+          cat > src/modules/$MOD/ui.tsx <<EOF
+          export default function ${MOD^}UI() {
+            return <div>🧩 Módulo de ${MOD^}</div>;
+          }
+          EOF
+
+      - name: Scaffold Three.js scene
+        run: |
+          mkdir -p src/three
+          cat > src/three/$MOD.scene.ts <<EOF
+          import * as THREE from 'three';
+
+          export function init${MOD^}Scene(canvas: HTMLCanvasElement) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+              75,
+              canvas.clientWidth / canvas.clientHeight,
+              0.1,
+              1000
+            );
+            const renderer = new THREE.WebGLRenderer({ canvas });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+            // TODO: Añade objetos para ${MOD^}
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+            camera.position.z = 5;
+
+            function animate() {
+              requestAnimationFrame(animate);
+              cube.rotation.x += 0.01;
+              cube.rotation.y += 0.01;
+              renderer.render(scene, camera);
+            }
+            animate();
+          }
+          EOF
+
+      - name: Update ModuleLoader.tsx
+        run: |
+          # 1) Añadir import al top
+          npx replace-in-file \
+            --patterns="(import .*ModuleDefinition.*)" \
+            --replacement="\1\nimport { ${MOD^}Module } from '../modules/$MOD/config';" \
+            core/ModuleLoader.tsx
+
+          # 2) Insertar en ALL_MODULES array
+          npx replace-in-file \
+            --patterns="(const ALL_MODULES: ModuleDefinition\[] = \[)" \
+            --replacement="\1\n  ${MOD^}Module," \
+            core/ModuleLoader.tsx
+
+      - name: Commit and open PR
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b scaffold/$MOD
+          git add src/modules/$MOD src/three/$MOD.scene.ts core/ModuleLoader.tsx
+          git commit -m "feat: scaffold module $MOD"
+          gh pr create \
+            --title "Scaffold module $MOD" \
+            --body "Este PR agrega el módulo **$MOD** con su configuración, UI y escena de Three.js."

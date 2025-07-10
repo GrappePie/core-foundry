@@ -21,7 +21,7 @@ Each client can:
 | Area                | Technology                              |
 |---------------------|-----------------------------------------|
 | Framework       | Next.js (App Router)   |
-| Visual Engine   | Phaser 3               |
+| Visual Engine   | Three.js               |
 | Language            | TypeScript                              |
 | UI              | Tailwind CSS           |
 | Module Management   | Modular architecture with dynamic loading|
@@ -31,7 +31,7 @@ Each client can:
 ## 🗺️ Roadmap
 
 - [x] Create base with Next.js + Tailwind + TS
-- [x] Integrate Phaser for game-like visualization
+- [x] Integrate Three.js for game-like visualization
 - [ ] Load modules dynamically from back-end
 - [ ] Visual connection between modules (cables/power/data)
 - [ ] Animated data flow between modules
