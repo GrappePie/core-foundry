@@ -5,21 +5,25 @@ interface MainState {
     isInitialized: boolean;
     activeModules: string[];
     visualConfig: VisualConfig;
+    moduleSettings: Record<string, Record<string, unknown>>;
     setInitialData: (data: Tenant | null) => void;
     updateModulePosition: (moduleId: string, position: ModulePosition) => VisualConfig;
     addConnection: (connection: ModuleConnection) => VisualConfig;
     toggleModule: (moduleId: string) => { activeModules: string[]; visualConfig: VisualConfig };
+    updateSettings: (moduleId: string, settings: Record<string, unknown>) => Record<string, Record<string, unknown>>;
 }
 
 export const useMainStore = create<MainState>((set, get) => ({
     isInitialized: false,
     activeModules: [],
     visualConfig: { positions: {}, connections: [] },
+    moduleSettings: {},
 
     setInitialData: (data) => set({
         // Manejo de data null o undefined
         activeModules: Array.isArray(data?.activeModules) ? data!.activeModules : [],
         visualConfig: data?.visualConfig ?? { positions: {}, connections: [] },
+        moduleSettings: {},
         isInitialized: true,
     }),
 
@@ -41,6 +45,16 @@ export const useMainStore = create<MainState>((set, get) => ({
             set({ visualConfig: newVisualConfig });
         }
         return newVisualConfig;
+    },
+
+    updateSettings: (moduleId, settings) => {
+        const state = get();
+        const newSettings = {
+            ...state.moduleSettings,
+            [moduleId]: { ...state.moduleSettings[moduleId], ...settings },
+        };
+        set({ moduleSettings: newSettings });
+        return newSettings;
     },
 
     toggleModule: (moduleId: string) => {

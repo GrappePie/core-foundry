@@ -5,18 +5,24 @@ import type { ModuleConfig } from '@/modules/module-types';
 
 // Usamos la interfaz ModuleConfig importada para asegurar consistencia entre módulos.
 
-const ALL_MODULES: ModuleConfig[] = [
+const CORE_MODULES: ModuleConfig[] = [
     inventoryModuleConfig,
     crmModuleConfig,
     logisticsModuleConfig,
 ];
+
+const EXTERNAL_MODULES: ModuleConfig[] = [];
+
+export function registerExternalModule(config: ModuleConfig) {
+    EXTERNAL_MODULES.push(config);
+}
 
 /**
  * Devuelve un array con las configuraciones de todos los módulos registrados.
  * @returns {ModuleConfig[]} Un array de todas las configuraciones de módulos.
  */
 export function getAllModules(): ModuleConfig[] {
-    return ALL_MODULES;
+    return [...CORE_MODULES, ...EXTERNAL_MODULES];
 }
 
 /**
@@ -25,5 +31,5 @@ export function getAllModules(): ModuleConfig[] {
  * @returns {ModuleConfig | undefined} La configuración del módulo o undefined si no se encuentra.
  */
 export function getModuleById(id: string): ModuleConfig | undefined {
-    return ALL_MODULES.find(m => m.id === id);
+    return [...CORE_MODULES, ...EXTERNAL_MODULES].find(m => m.id === id);
 }

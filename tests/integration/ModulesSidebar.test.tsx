@@ -17,7 +17,7 @@ describe('ModulesSidebar', () => {
 
         // Estado inicial: solo 'inventory' está activo
         act(() => {
-            useMainStore.setState({ activeModules: ['inventory'] });
+            useMainStore.setState({ activeModules: ['inventory'], moduleSettings: {} });
         });
 
         render(<ModulesSidebar onConfigChange={handleConfigChange} />);

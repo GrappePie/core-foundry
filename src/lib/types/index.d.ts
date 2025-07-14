@@ -68,3 +68,15 @@ export interface ModuleEvent {
     // CORRECCIÓN: Se usa 'unknown' en lugar de 'any' para un tipado más seguro.
     payload: unknown;
 }
+
+// Mapa de eventos con sus payloads para tipar el ModuleBus
+export interface ModuleEventMap {
+    'module:data:transfer': {
+        from: string;
+        to: string;
+        payload: unknown;
+    };
+    'module:dragged': ModuleDraggedPayload;
+    'module:connect': ModuleConnectPayload;
+    'ui:module:open': { moduleId: string };
+}

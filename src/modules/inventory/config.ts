@@ -7,4 +7,11 @@ export const inventoryModuleConfig: ModuleConfig = {
     dependencies: [],
     apiBasePath: '/api/modules/inventory',
     UiComponent: dynamic(() => import('./ui')),
+    settingsSchema: {
+        type: 'object',
+        properties: {
+            itemsPerPage: { type: 'number', default: 20 },
+        },
+    },
+    defaultSettings: { itemsPerPage: 20 },
 };
