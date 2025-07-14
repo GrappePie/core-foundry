@@ -1,3 +1,4 @@
+import React from 'react';
 import NextAuth from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
@@ -25,6 +26,18 @@ export const {
         async jwt({ token, user }) {
             if (user) token.sub = user.id;
             return token;
+        },
+    },
+    events: {
+        async createUser({ user }) {
+            if (!user.email) return;
+            const { sendEmail } = await import('@/lib/email');
+            const { WelcomeEmail } = await import('@/emails');
+            await sendEmail({
+                to: user.email,
+                subject: 'Bienvenido a CoreFoundry',
+                react: React.createElement(WelcomeEmail, { userName: user.name ?? undefined }),
+            });
         },
     },
     pages: { signIn: '/login' },

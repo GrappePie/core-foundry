@@ -1,7 +1,10 @@
+import React from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { db } from '@/lib/db';
 import { parseString } from '@/lib/validators';
+import { sendEmail } from '@/lib/email';
+import { InvitationEmail } from '@/emails';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
 
@@ -33,5 +36,12 @@ export async function POST(request: NextRequest) {
     const invitation = await db.invitation.create({
         data: { tenantId: tenant.id, email, role }
     });
+    if (email) {
+        await sendEmail({
+            to: email,
+            subject: `Invitación a ${tenant.name}`,
+            react: React.createElement(InvitationEmail, { tenantName: tenant.name, role }),
+        });
+    }
     return NextResponse.json(invitation, { status: 201 });
 }

@@ -1,6 +1,9 @@
+import React from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
+import { sendEmail } from '@/lib/email';
+import { SubscriptionConfirmationEmail, BillingNotificationEmail } from '@/emails';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10',
@@ -40,6 +43,17 @@ export async function POST(req: NextRequest) {
           status: 'active',
         },
       });
+      const tenant = await db.tenant.findUnique({
+        where: { id: session.metadata.tenantId },
+        include: { owner: true, subscription: true },
+      });
+      if (tenant?.owner.email) {
+        await sendEmail({
+          to: tenant.owner.email,
+          subject: 'Confirmación de suscripción',
+          react: React.createElement(SubscriptionConfirmationEmail, { plan: tenant.subscription?.plan ?? 'basic' }),
+        });
+      }
       break;
     }
     case 'customer.subscription.updated': {
@@ -53,6 +67,17 @@ export async function POST(req: NextRequest) {
           plan: sub.items.data[0]?.price.nickname ?? 'basic',
         },
       });
+      const tenant = await db.tenant.findUnique({
+        where: { id: sub.metadata.tenantId },
+        include: { owner: true, subscription: true },
+      });
+      if (tenant?.owner.email) {
+        await sendEmail({
+          to: tenant.owner.email,
+          subject: 'Notificación de facturación',
+          react: React.createElement(BillingNotificationEmail, { amount: sub.latest_invoice?.amount_paid ? `$${(sub.latest_invoice.amount_paid / 100).toFixed(2)}` : 'Tu suscripción' }),
+        });
+      }
       break;
     }
     default:

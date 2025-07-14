@@ -32,7 +32,10 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "stripe": "^14.0.0",
-    "zustand": "^4.5.4"
+    "zustand": "^4.5.4",
+    "resend": "^0.25.0",
+    "@react-email/components": "^0.0.19",
+    "@react-email/render": "^0.0.19"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
