@@ -24,6 +24,7 @@ Esta experiencia inmersiva ofrece una manera intuitiva y dinámica de gestionar 
 - **Interfaz Gamificada**: mapa 2D interactivo renderizado con **Phaser 3**.
 - **Autenticación Segura**: gestionada con **NextAuth.js (Auth.js v5)**.
 - **Persistencia de Datos**: Prisma ORM sobre PostgreSQL.
+- **Notificaciones por Email**: envío de correos transaccionales con **Resend** y plantillas en **React Email**.
 - **Observabilidad Completa**:
     - Métricas expuestas para **Prometheus** (`/api/metrics`).
     - Logs estructurados.
@@ -102,6 +103,8 @@ GOOGLE_CLIENT_ID=tu_id_google
 GOOGLE_CLIENT_SECRET=tu_secreto_google
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+RESEND_API_KEY=
+EMAIL_FROM=onboarding@resend.dev
 ```
 
 Añade cualquier otra variable que requiera tu configuración específica.
