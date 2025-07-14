@@ -1,7 +1,7 @@
 import { inventoryModuleConfig } from '@/modules/inventory/config';
 import { crmModuleConfig }       from '@/modules/crm/config';
 import { logisticsModuleConfig } from '@/modules/logistics/config';
-import type { ModuleConfig } from '@/modules/inventory/config';
+import type { ModuleConfig } from '@/modules/module-types';
 
 // Usamos la interfaz ModuleConfig importada para asegurar consistencia entre módulos.
 
