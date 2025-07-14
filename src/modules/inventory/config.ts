@@ -1,14 +1,5 @@
 import dynamic from 'next/dynamic';
-import type { ComponentType } from 'react';
-
-export interface ModuleConfig {
-    id: string;
-    name: string;
-    dependencies: string[];
-    apiBasePath: string;
-    // Componente de interfaz de usuario con props desconocidos.
-    UiComponent: ComponentType<unknown>;
-}
+import type { ModuleConfig } from '@/modules/module-types';
 
 export const inventoryModuleConfig: ModuleConfig = {
     id: 'inventory',

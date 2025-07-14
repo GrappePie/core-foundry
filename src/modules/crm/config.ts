@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import type { ModuleConfig } from '@/modules/inventory/config';
+import type { ModuleConfig } from '@/modules/module-types';
 
 export const crmModuleConfig: ModuleConfig = {
     id: 'crm',
