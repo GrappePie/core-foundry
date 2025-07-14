@@ -4,6 +4,22 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig = {
     reactStrictMode: true,
 
+    async headers() {
+        const ContentSecurityPolicy =
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://accounts.google.com; connect-src 'self';";
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'Content-Security-Policy',
+                        value: ContentSecurityPolicy.replace(/\n/g, ''),
+                    },
+                ],
+            },
+        ];
+    },
+
     // Mantenemos la configuración de Webpack para evitar los errores de "Critical dependency"
     // que vimos con las librerías de instrumentación.
     webpack: (config, { isServer }) => {
