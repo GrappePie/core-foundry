@@ -1,4 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
+// Next.js carga automáticamente este archivo al estar nombrado
+// `instrumentation.client.ts`, permitiendo inicializar Sentry en el navegador.
 
 /**
  * Este archivo se ejecuta solo en el navegador y es el lugar
