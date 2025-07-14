@@ -109,6 +109,7 @@ Si planeas usar `docker-compose`, define además `POSTGRES_USER`,
 - **Endpoint de salud**: `/api/health`.
 - **Logs**: estructurados con Pino.
 - **Trazas**: integradas con OpenTelemetry.
+- **Sentry en el cliente**: Next.js carga automáticamente `instrumentation.client.ts` para inicializar Sentry en el navegador.
 
 ---
 
