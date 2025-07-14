@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken }             from 'next-auth/jwt';
 import { db }                   from '@/lib/db';
 import logger                   from '@/lib/logger';
+import { parseStringArray, parseVisualConfig } from '@/lib/validators';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
 
@@ -41,7 +42,9 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const { activeModules, visualConfig } = await request.json();
+        const body = await request.json().catch(() => ({}));
+        const activeModules = parseStringArray(body.activeModules, 'activeModules');
+        const visualConfig = parseVisualConfig(body.visualConfig);
         const tenant = await db.tenant.upsert({
             where: { ownerId: token.sub },
             update: {

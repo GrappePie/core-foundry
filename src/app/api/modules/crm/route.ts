@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken }             from 'next-auth/jwt';
 import { db }                   from '@/lib/db';
 import { Prisma } from '@prisma/client';
+import { parseString } from '@/lib/validators';
 
 const SECRET = process.env.NEXTAUTH_SECRET!;
 const SALT = process.env.NEXTAUTH_SALT!;
@@ -26,9 +27,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const { name, email, company } = await request.json();
-    // Validaciones mínimas
-    if (!name || !email || !company) {
+    const body = await request.json().catch(() => ({}));
+    let name: string, email: string, company: string;
+    try {
+        name = parseString(body.name, 'name');
+        email = parseString(body.email, 'email');
+        company = parseString(body.company, 'company');
+    } catch {
         return NextResponse.json({ error: 'Campos incompletos' }, { status: 400 });
     }
 
