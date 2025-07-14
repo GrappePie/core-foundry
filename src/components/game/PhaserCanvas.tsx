@@ -6,6 +6,9 @@ import { phaserConfig } from '@/core/phaser/game';
 import MainScene from '@/core/phaser/scenes/MainScene';
 import { VisualConfig } from '@/lib/types';
 
+// Define a SoundManager type with context info to avoid any
+type SoundManagerWithContext = { context: { rawContext?: AudioContext; audioContext?: AudioContext } & AudioContext };
+
 interface PhaserCanvasProps {
     visualConfig: VisualConfig;
 }
@@ -24,7 +27,7 @@ const PhaserCanvas = ({ visualConfig }: PhaserCanvasProps) => {
         gameRef.current = game;
 
         // Evitar resume en AudioContext cerrado
-        const soundManager = (game.sound as any);
+        const soundManager = game.sound as unknown as SoundManagerWithContext;
         if (soundManager?.context) {
             const rawCtx: AudioContext =
                 soundManager.context.rawContext ||

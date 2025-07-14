@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken }             from 'next-auth/jwt';
 import { db }                   from '@/lib/db';
+import { Prisma } from '@prisma/client';
 
 const SECRET = process.env.NEXTAUTH_SECRET!;
+const SALT = process.env.NEXTAUTH_SALT!;
 
 export async function GET(request: NextRequest) {
-    const token = await getToken({ req: request, secret: SECRET });
+    const token = await getToken({ req: request, secret: SECRET, salt: SALT });
     if (!token?.sub) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const token = await getToken({ req: request, secret: SECRET });
+    const token = await getToken({ req: request, secret: SECRET, salt: SALT });
     if (!token?.sub) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
@@ -40,9 +42,9 @@ export async function POST(request: NextRequest) {
             },
         });
         return NextResponse.json(newContact, { status: 201 });
-    } catch (err: any) {
+    } catch (err: unknown) {
         // Si ya existe un contacto con ese email, Prisma lanzará P2002
-        if (err.code === 'P2002') {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
             return NextResponse.json({ error: 'El email ya está registrado' }, { status: 409 });
         }
         console.error('[API /crm POST] Error creando contacto:', err);

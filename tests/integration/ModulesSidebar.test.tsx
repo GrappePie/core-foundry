@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { ModulesSidebar } from '@/components/ui/ModulesSidebar';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { useMainStore } from '@/core/store/useMainStore';
+import { ModulesSidebar } from '@/components/ui/ModulesSidebar';
 
 // Mock del ModuleLoader
 jest.mock('@/core/ModuleLoader', () => ({
@@ -31,10 +31,8 @@ describe('ModulesSidebar', () => {
 
         // Simula el clic para activar el módulo CRM
         fireEvent.click(crmToggle);
-
-        // Verifica que la función de callback fue llamada
-        expect(handleConfigChange).toHaveBeenCalledTimes(1);
-        // Verifica que el estado del store se actualizó (el toggle ahora está checked)
-        expect(crmToggle).toBeChecked();
+        // Espera que onConfigChange haya sido llamado y el toggle se actualice
+        await waitFor(() => expect(handleConfigChange).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(crmToggle).toBeChecked());
     });
 });
