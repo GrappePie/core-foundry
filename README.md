@@ -98,6 +98,8 @@ GOOGLE_CLIENT_SECRET=tu_secreto_google
 ```
 
 Añade cualquier otra variable que requiera tu configuración específica.
+Si planeas usar `docker-compose`, define además `POSTGRES_USER`,
+`POSTGRES_PASSWORD` y `POSTGRES_DB` en un archivo `.env`.
 
 ---
 
@@ -147,16 +149,20 @@ Para más detalles, consulta la carpeta `./docs/api`.
 
 ### Docker
 
-1. Construye la imagen:
+1. Crea un archivo `.env` si vas a usar Docker Compose:
+   ```bash
+   cp .env.example .env
+   ```
+2. Construye la imagen:
    ```bash
    docker build -t corefoundry:latest .
    ```
-2. Etiqueta y sube a tu registry:
+3. Etiqueta y sube a tu registry:
    ```bash
    docker tag corefoundry:latest tu-registry/corefoundry:latest
    docker push tu-registry/corefoundry:latest
    ```
-3. Ejecuta con Docker Compose:
+4. Ejecuta con Docker Compose:
    ```bash
    docker-compose up -d
    ```
