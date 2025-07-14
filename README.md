@@ -48,6 +48,7 @@ Antes de comenzar, asegúrate de tener:
     - `NEXTAUTH_URL`
     - `NEXTAUTH_SALT`
     - `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
+    - `STRIPE_SECRET_KEY` y `STRIPE_WEBHOOK_SECRET`
 
 ---
 
@@ -99,6 +100,8 @@ NEXTAUTH_URL=http://localhost:3001
 NEXTAUTH_SALT=una_cadena_segura_para_salt
 GOOGLE_CLIENT_ID=tu_id_google
 GOOGLE_CLIENT_SECRET=tu_secreto_google
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 ```
 
 Añade cualquier otra variable que requiera tu configuración específica.

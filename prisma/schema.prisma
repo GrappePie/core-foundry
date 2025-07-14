@@ -65,6 +65,7 @@ model Tenant {
   visualConfig  Json
   userId        String   @unique
   user          User     @relation(fields: [userId], references: [id])
+  subscription  Subscription?
 }
 
 model CrmContact {
@@ -74,4 +75,14 @@ model CrmContact {
   company String
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id             String  @id @default(cuid())
+  tenantId       String  @unique
+  tenant         Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId     String
+  subscriptionId String
+  plan           String
+  status         String
 }
