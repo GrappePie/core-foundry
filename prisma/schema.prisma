@@ -45,7 +45,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  tenant        Tenant?
+  ownedTenant   Tenant?      @relation("TenantOwner")
+  memberships   TenantUser[]
   crmContacts   CrmContact[]
 }
 
@@ -63,9 +64,11 @@ model Tenant {
   name          String
   activeModules String[]
   visualConfig  Json
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id])
+  ownerId       String   @unique
+  owner         User     @relation("TenantOwner", fields: [ownerId], references: [id])
   subscription  Subscription?
+  memberships   TenantUser[]
+  invitations   Invitation[]
 }
 
 model CrmContact {
@@ -85,4 +88,34 @@ model Subscription {
   subscriptionId String
   plan           String
   status         String
+}
+
+model TenantUser {
+  tenantId String
+  userId   String
+  role     TenantRole
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, userId])
+}
+
+model Invitation {
+  id       String     @id @default(cuid())
+  tenantId String
+  email    String
+  role     TenantRole
+  accepted Boolean    @default(false)
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, email])
+}
+
+enum TenantRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
 }
