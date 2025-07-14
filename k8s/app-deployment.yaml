@@ -1,0 +1,39 @@
+# --- Despliega la aplicación Next.js ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-app-deployment
+  namespace: satisfactory-saas
+spec:
+  replicas: 2 # Empezamos con 2 réplicas
+  selector:
+    matchLabels:
+      app: saas-app
+  template:
+    metadata:
+      labels:
+        app: saas-app
+    spec:
+      containers:
+        - name: saas-app
+          image: tu-usuario/satisfactory-saas:latest # La imagen que subiste a tu registro
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: saas-app-config
+            - secretRef:
+                name: saas-app-secrets
+          # Probes de salud para que K8s sepa si el pod está listo y vivo
+          readinessProbe:
+            httpGet:
+              path: /api/health # Deberías crear este endpoint simple que devuelva 200
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 20

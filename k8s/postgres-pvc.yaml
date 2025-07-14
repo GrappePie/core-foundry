@@ -1,0 +1,12 @@
+# --- Reclama almacenamiento persistente para la base de datos ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: satisfactory-saas
+spec:
+  accessModes:
+    - ReadWriteOnce # Solo puede ser montado por un nodo a la vez
+  resources:
+    requests:
+      storage: 5Gi # Pide 5 Gigabytes de almacenamiento

@@ -1,0 +1,21 @@
+# --- Ejecuta las migraciones de la base de datos ANTES de desplegar la app ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migrate-job
+  namespace: satisfactory-saas
+spec:
+  template:
+    spec:
+      containers:
+        - name: prisma-migrate
+          image: tu-usuario/satisfactory-saas:latest # Usa la misma imagen que tu app
+          command: ["npx", "prisma", "migrate", "deploy"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: saas-app-config
+                  key: DATABASE_URL
+      restartPolicy: Never # No reintentar si falla, para poder depurar
+  backoffLimit: 4 # Número de reintentos

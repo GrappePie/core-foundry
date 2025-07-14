@@ -1,0 +1,14 @@
+# --- Expone la aplicación Next.js dentro del clúster ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-app-service
+  namespace: satisfactory-saas
+spec:
+  selector:
+    app: saas-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP

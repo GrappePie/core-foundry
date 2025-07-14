@@ -1,0 +1,14 @@
+# --- Expone la base de datos dentro del clúster ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: satisfactory-saas
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP # Solo accesible desde dentro del clúster

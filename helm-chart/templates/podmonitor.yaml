@@ -1,0 +1,16 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: [monitoring.coreos.com/v1](https://monitoring.coreos.com/v1)
+kind: PodMonitor
+metadata:
+  name: {{ include "satisfactory-saas.fullname" . }}
+  labels:
+    {{- include "satisfactory-saas.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "satisfactory-saas.selectorLabels" . | nindent 6 }}
+  podMetricsEndpoints:
+    - port: http # El nombre del puerto en el deployment
+      path: /api/metrics
+      interval: {{ .Values.monitoring.scrapeInterval }}
+  {{- end }}

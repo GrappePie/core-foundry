@@ -1,0 +1,14 @@
+apiVersion: v2
+name: satisfactory-saas
+description: Un chart de Helm para desplegar la plataforma SaaS gamificada.
+type: application
+# Versión incrementada para reflejar los nuevos cambios de observabilidad
+version: 0.2.0
+appVersion: "1.1.0"
+
+# Opcional: Si quisieras gestionar el collector de OTEL como una dependencia externa
+# dependencies:
+# - name: opentelemetry-collector
+#   version: "0.57.2"
+#   repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+#   condition: tracing.enabled

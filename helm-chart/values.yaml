@@ -1,0 +1,100 @@
+apiVersion: v2
+name: satisfactory-saas
+description: Un chart de Helm para desplegar la plataforma SaaS gamificada.
+type: application
+# Versión incrementada para reflejar los nuevos cambios de observabilidad
+version: 0.2.0
+appVersion: "1.1.0"
+
+# Opcional: Si quisieras gestionar el collector de OTEL como una dependencia externa
+# dependencies:
+# - name: opentelemetry-collector
+#   version: "0.57.2"
+#   repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+#   condition: tracing.enabled
+  ```yaml
+# helm-chart/values.yaml
+
+# Valores por defecto para el chart de Helm
+
+replicaCount: 1
+
+image:
+  repository: tu-usuario/satisfactory-saas
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: saas.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryAverageValue: 500Mi
+
+# --- SECCIONES DE OBSERVABILIDAD DOCUMENTADAS ---
+
+# Configuración de Monitoreo con Prometheus
+# Habilita con --set monitoring.enabled=true
+monitoring:
+  enabled: true
+  # Intervalo en segundos en el que Prometheus recolectará las métricas.
+  scrapeInterval: 15s
+
+# Configuración de Logging con Fluent Bit
+# Habilita con --set logging.enabled=true
+logging:
+  enabled: true
+  driver: fluent-bit
+  fluentBit:
+    image: "fluent/fluent-bit:1.9"
+
+# Configuración de Trazabilidad Distribuida con OpenTelemetry
+# Habilita con --set tracing.enabled=true
+tracing:
+  enabled: true
+  collector:
+    # Endpoint del servicio del Collector de OpenTelemetry dentro del clúster.
+    # El nombre del servicio se construye a partir del nombre del release de Helm.
+    # Ejemplo: [http://satisfactory-saas-otel-collector.satisfactory-saas.svc.cluster.local:4317](http://satisfactory-saas-otel-collector.satisfactory-saas.svc.cluster.local:4317)
+    endpoint: "" # Se genera dinámicamente en _helpers.tpl si está vacío
+
+# Configuración de Captura de Errores con Sentry
+# Habilita con --set errorTracking.enabled=true y pasando el DSN con --set-string
+errorTracking:
+  enabled: true
+  # ¡IMPORTANTE! No guardes el DSN aquí. Pásalo de forma segura durante la instalación.
+  # Ejemplo: --set-string errorTracking.dsn="https://...."
+  dsn: ""
+
+# --- FIN DE SECCIONES DE OBSERVABILIDAD ---
+
+appConfig:
+  NEXTAUTH_URL: "[https://saas.local](https://saas.local)"
+  GOOGLE_CLIENT_ID: "tu-id-de-google.apps.googleusercontent.com"
+
+appSecrets:
+  # Estos secretos deben ser pasados durante la instalación con --set-string o --set-file
+  NEXTAUTH_SECRET: ""
+  GOOGLE_CLIENT_SECRET: ""
+
+postgres:
+  enabled: true
+  user: "user"
+  password: ""
+  db: "mydb"
+  storage: 5Gi

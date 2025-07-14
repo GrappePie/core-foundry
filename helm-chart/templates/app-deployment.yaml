@@ -1,0 +1,18 @@
+env:
+  # ... (variables existentes)
+  {{- if .Values.tracing.enabled }}
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: {{ .Values.tracing.collector.endpoint | quote }}
+  {{- end }}
+  {{- if .Values.errorTracking.enabled }}
+  - name: SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "satisfactory-saas.fullname" . }}-secrets
+        key: SENTRY_DSN
+  - name: NEXT_PUBLIC_SENTRY_DSN
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "satisfactory-saas.fullname" . }}-secrets
+        key: SENTRY_DSN
+  {{- end }}

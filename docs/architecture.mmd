@@ -1,0 +1,114 @@
+graph TD
+    subgraph "Servicios Externos"
+        direction LR
+        GH_ACTIONS["CI/CD\nGitHub Actions"]
+        DOCKER_REGISTRY["Registro\nDocker Hub/GHCR"]
+        SENTRY_IO["Sentry.io"]
+        GOOGLE["Google\nOAuth Provider"]
+    end
+
+    subgraph "Navegador del Usuario"
+        direction TB
+        USER["Usuario"]
+
+        subgraph "React App (Client)"
+            direction TB
+            PHASER["Phaser 3\nCanvas 2D"]
+            REACT_UI["Componentes UI\n(Sidebar, Panels)"]
+            ZUSTAND["Zustand\n(Estado Global)"]
+            MODULE_BUS["ModuleBus\n(Eventos)"]
+            SENTRY_FE["Sentry SDK\n(Frontend)"]
+        end
+
+        USER -->|Interactúa| REACT_UI
+        REACT_UI <-->|Lee/Escribe Estado| ZUSTAND
+        REACT_UI -->|Despacha Eventos| MODULE_BUS
+        PHASER -->|Despacha Eventos| MODULE_BUS
+        MODULE_BUS -->|Actualiza UI| REACT_UI
+        MODULE_BUS -->|Comanda Escena| PHASER
+        ZUSTAND -->|Sincroniza| PHASER
+    end
+
+    subgraph "Cluster de Kubernetes (Desplegado por Helm)"
+        direction TB
+        INGRESS["Ingress Controller\n(NGINX)"]
+
+        subgraph "Pods de la Aplicación (Deployment)"
+            direction TB
+            POD_APP["Pod: satisfactory-saas"]
+
+            subgraph "Contenedor Next.js"
+                NEXT_SERVER["Next.js Server\n(Server Components, API Routes)"]
+                OTEL_MW["OpenTelemetry\nMiddleware"]
+                PRISMA["Prisma Client"]
+                SENTRY_BE["Sentry SDK\n(Backend)"]
+            end
+
+            POD_APP --> NEXT_SERVER
+        end
+
+        subgraph "Pods de la Base de Datos"
+            direction TB
+            POD_DB["Pod: postgres"]
+
+            subgraph "Contenedor PostgreSQL"
+                DB["PostgreSQL\nMulti-Tenant"]
+            end
+
+            PVC["PersistentVolumeClaim"]
+            POD_DB --> DB
+            DB <--> PVC
+        end
+
+        subgraph "Pila de Observabilidad"
+            direction LR
+            PROMETHEUS["Prometheus"]
+            GRAFANA["Grafana"]
+            JAEGER["Jaeger/Tempo\n(Backend de Trazas)"]
+            LOKI["Loki/Elasticsearch\n(Backend de Logs)"]
+            OTEL_COLLECTOR["OpenTelemetry\nCollector"]
+            FLUENT_BIT["Fluent Bit\n(DaemonSet)"]
+
+            PROMETHEUS --> GRAFANA
+            LOKI --> GRAFANA
+            JAEGER --> GRAFANA
+        end
+
+        SERVICE_APP["Service: saas-app"]
+        SERVICE_DB["Service: postgres"]
+        SERVICE_OTEL["Service: otel-collector"]
+
+        INGRESS --> SERVICE_APP
+        SERVICE_APP --> POD_APP
+
+        NEXT_SERVER --> PRISMA
+        PRISMA --> SERVICE_DB
+        SERVICE_DB --> POD_DB
+
+        PM["PodMonitor"]
+        PROMETHEUS -->|Scrape /api/metrics| PM
+        PM --> POD_APP
+
+        NEXT_SERVER --> OTEL_MW
+        OTEL_MW -->|Envía Trazas| SERVICE_OTEL
+        SERVICE_OTEL --> OTEL_COLLECTOR
+        OTEL_COLLECTOR --> JAEGER
+
+        POD_APP --> FLUENT_BIT
+        POD_DB --> FLUENT_BIT
+        FLUENT_BIT -->|Envía Logs| LOKI
+    end
+
+%% Flujos de Datos y Conexiones
+    REACT_UI -->|POST /api/tenant/me| INGRESS
+    SENTRY_FE -->|Errores/Perf.| SENTRY_IO
+    SENTRY_BE -->|Errores/Perf.| SENTRY_IO
+
+    NEXT_SERVER --> NEXTAUTH
+    NEXTAUTH["NextAuth"]
+    NEXTAUTH -->|Verifica Token| GOOGLE
+
+    GH_ACTIONS -->|Build & Push| DOCKER_REGISTRY
+    GH_ACTIONS -->|helm upgrade| K8S_API["API de Kubernetes"]
+    K8S_API -->|Despliega| INGRESS
+    DOCKER_REGISTRY -->|Pull Imagen| POD_APP

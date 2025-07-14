@@ -1,0 +1,5 @@
+# --- Define un espacio de nombres para aislar nuestros recursos ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: satisfactory-saas

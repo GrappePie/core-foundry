@@ -1,0 +1,13 @@
+# --- Almacena configuración no sensible ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: saas-app-config
+  namespace: satisfactory-saas
+data:
+  DB_NAME: "mydb"
+  DB_HOST: "postgres-service" # El nombre del servicio de K8s de Postgres
+  DB_PORT: "5432"
+  DATABASE_URL: "postgresql://user:password@postgres-service:5432/mydb?schema=public"
+  NEXTAUTH_URL: "https://tu-dominio.com" # Cambiar por tu dominio de producción
+  GOOGLE_CLIENT_ID: "tu-id-de-cliente-de-google.apps.googleusercontent.com"

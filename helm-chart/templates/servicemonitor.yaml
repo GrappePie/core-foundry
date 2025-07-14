@@ -1,0 +1,19 @@
+# --- Permite a Prometheus Operator descubrir y scrapear nuestro servicio ---
+  {{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "satisfactory-saas.fullname" . }}
+  labels:
+    {{- include "satisfactory-saas.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "satisfactory-saas.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: http
+      path: /api/metrics # La ruta donde exponemos las métricas
+      interval: 15s # Frecuencia de scrapeo

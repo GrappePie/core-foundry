@@ -1,0 +1,46 @@
+¡Tu despliegue de la plataforma SaaS gamificada está listo!
+
+1. Accede a tu aplicación:
+{{- if .Values.ingress.enabled }}
+   La aplicación está disponible en: https://{{ .Values.ingress.hosts  | first | toYaml | indent 2 | trimAll "\"" }}
+{{- else }}
+   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "satisfactory-saas.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   echo "La aplicación está disponible en: http://$SERVICE_IP"
+{{- end }}
+
+---
+OBSERVABILIDAD:
+
+{{- if .Values.monitoring.enabled }}
+2. Métricas (Prometheus y Grafana):
+   - Expón tu servicio de Grafana (si usas el stack de kube-prometheus):
+     kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
+   - Abre http://localhost:3000 e importa el dashboard 'grafana-dashboard.json' de este repositorio.
+{{- end }}
+
+{{- if .Values.tracing.enabled }}
+3. Trazas (Jaeger):
+   - Expón tu servicio de Jaeger Query:
+     kubectl port-forward svc/jaeger-query 16686:16686 -n observability
+   - Abre http://localhost:16686 para explorar las trazas de tu aplicación.
+{{- end }}
+
+{{- if .Values.errorTracking.enabled }}
+4. Errores (Sentry):
+   - Ve al dashboard de tu proyecto en Sentry.io para ver los errores y eventos de rendimiento capturados en tiempo real.
+   - URL: https://{{ .Values.errorTracking.sentryOrg | default "tu-organizacion" }}.sentry.io/projects/{{ .Values.errorTracking.sentryProject | default "tu-proyecto" }}/
+{{- end }}
+
+---
+COMANDO DE INSTALACIÓN DE EJEMPLO:
+
+helm install {{ .Release.Name }} . \
+  --namespace {{ .Release.Namespace }} \
+  --create-namespace \
+  --set monitoring.enabled={{ .Values.monitoring.enabled }} \
+  --set tracing.enabled={{ .Values.tracing.enabled }} \
+  --set errorTracking.enabled={{ .Values.errorTracking.enabled }} \
+  --set-string appSecrets.NEXTAUTH_SECRET="TU_SECRET_DE_NEXTAUTH" \
+  --set-string appSecrets.GOOGLE_CLIENT_SECRET="TU_SECRET_DE_GOOGLE" \
+  --set-string postgres.password="TU_PASSWORD_DE_DB" \
+  --set-string errorTracking.dsn="TU_DSN_DE_SENTRY"

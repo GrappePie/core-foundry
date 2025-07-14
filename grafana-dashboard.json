@@ -1,0 +1,55 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Uso de CPU",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"satisfactory-saas\", pod=~\"{{pod}}\"}[5m])) by (pod)",
+          "legendFormat": "{{pod}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Uso de Memoria",
+      "targets": [
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"satisfactory-saas\", pod=~\"{{pod}}\"}) by (pod)",
+          "legendFormat": "{{pod}}"
+        }
+      ],
+      "format": "bytes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Peticiones HTTP por segundo",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{namespace=\"satisfactory-saas\"}[5m])) by (route, status_code)",
+          "legendFormat": "{{route}} - {{status_code}}"
+        }
+      ]
+    },
+    {
+      "type": "heatmap",
+      "title": "Latencia de Peticiones (Histograma)",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_bucket{namespace=\"satisfactory-saas\"}[5m])) by (le)"
+        }
+      ]
+    }
+  ],
+  "title": "Dashboard SaaS Gamificado",
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser"
+}

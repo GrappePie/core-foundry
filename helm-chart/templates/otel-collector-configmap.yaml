@@ -1,0 +1,32 @@
+{{- if .Values.tracing.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "satisfactory-saas.fullname" . }}-otel-collector-config
+  labels:
+    {{- include "satisfactory-saas.labels" . | nindent 4 }}
+data:
+  otel-collector-config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+    processors:
+      batch:
+    exporters:
+      # Exporta a un backend de trazabilidad como Jaeger o Tempo
+      otlp:
+        endpoint: "jaeger-collector.observability.svc.cluster.local:4317"
+        tls:
+          insecure: true
+      # También puedes exportar a la consola para depuración
+      logging:
+        loglevel: debug
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp, logging]
+  {{- end }}
