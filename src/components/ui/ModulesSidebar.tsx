@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMainStore } from '@/core/store/useMainStore';
 import { getAllModules } from '@/core/ModuleLoader';
 import { VisualConfig } from '@/lib/types';
+import Link from 'next/link';
 
 interface ModulesSidebarProps {
     onConfigChange: (newConfig: { activeModules: string[]; visualConfig: VisualConfig }) => Promise<void>;
@@ -63,6 +64,10 @@ export const ModulesSidebar = ({ onConfigChange }: ModulesSidebarProps) => {
                     );
                 })}
             </ul>
+            <hr className="my-4 border-gray-600" />
+            <Link href="/dashboard/settings" className="text-sm hover:underline">
+                Ajustes del Tenant
+            </Link>
             <style jsx>{`
                 .toggle-checkbox {
                     @apply transition-all duration-300 ease-in-out;

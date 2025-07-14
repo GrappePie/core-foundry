@@ -13,14 +13,19 @@ export async function GET(request: NextRequest) {
     // Usamos upsert para asegurar que siempre haya un tenant
     try {
         const tenant = await db.tenant.upsert({
-            where: { userId: token.sub },
+            where: { ownerId: token.sub },
             update: {},   // No hay campos a cambiar en GET
             create: {
-                userId: token.sub,
+                ownerId: token.sub,
                 name: 'Mi Tenant',                      // Pon aquí tu valor por defecto
                 activeModules: [],                      // Array vacío inicial
                 visualConfig: { positions: {}, connections: [] },
             },
+        });
+        await db.tenantUser.upsert({
+            where: { tenantId_userId: { tenantId: tenant.id, userId: token.sub } },
+            update: {},
+            create: { tenantId: tenant.id, userId: token.sub, role: 'OWNER' },
         });
         return NextResponse.json(tenant);
     } catch (err) {
@@ -38,17 +43,22 @@ export async function POST(request: NextRequest) {
     try {
         const { activeModules, visualConfig } = await request.json();
         const tenant = await db.tenant.upsert({
-            where: { userId: token.sub },
+            where: { ownerId: token.sub },
             update: {
                 activeModules,
                 visualConfig: JSON.parse(JSON.stringify(visualConfig)),
             },
             create: {
-                userId: token.sub,
+                ownerId: token.sub,
                 name: 'Mi Tenant',                      // igual valor por defecto
                 activeModules,
                 visualConfig: JSON.parse(JSON.stringify(visualConfig)),
             },
+        });
+        await db.tenantUser.upsert({
+            where: { tenantId_userId: { tenantId: tenant.id, userId: token.sub } },
+            update: {},
+            create: { tenantId: tenant.id, userId: token.sub, role: 'OWNER' },
         });
         return NextResponse.json({ success: true, tenant });
     } catch (err) {

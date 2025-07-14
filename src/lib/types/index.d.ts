@@ -21,6 +21,22 @@ export interface Tenant {
     visualConfig: VisualConfig;
 }
 
+export type TenantRole = 'OWNER' | 'ADMIN' | 'EDITOR' | 'VIEWER';
+
+export interface TenantUser {
+    tenantId: string;
+    userId: string;
+    role: TenantRole;
+}
+
+export interface Invitation {
+    id: string;
+    tenantId: string;
+    email: string;
+    role: TenantRole;
+    accepted: boolean;
+}
+
 
 // --- Tipos para el Bus de Eventos ---
 // Define los tipos de eventos que pueden ocurrir en la aplicación.
