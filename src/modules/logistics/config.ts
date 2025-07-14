@@ -8,4 +8,11 @@ export const logisticsModuleConfig: ModuleConfig = {
     apiBasePath: '/api/modules/logistics',
     // CORRECCIÓN: Se elimina el tipo ComponentType que no se usaba.
     UiComponent: dynamic(() => import('./ui')),
+    settingsSchema: {
+        type: 'object',
+        properties: {
+            defaultCarrier: { type: 'string', default: 'UPS' },
+        },
+    },
+    defaultSettings: { defaultCarrier: 'UPS' },
 };

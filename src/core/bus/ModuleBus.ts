@@ -1,29 +1,27 @@
-// Note: Removed unused ModuleEvent import
+import type { ModuleEventMap } from '@/lib/types';
 
-// Generic callback for events with typed payloads
 type EventCallback<Payload> = (payload: Payload) => void;
 
-class EventBus {
-    private subscribers: Map<string, Set<EventCallback<unknown>>> = new Map();
+class EventBus<T> {
+    private subscribers: { [K in keyof T]?: Set<EventCallback<T[K]>> } = {};
 
-    subscribe<Payload>(eventType: string, callback: EventCallback<Payload>): () => void {
-        if (!this.subscribers.has(eventType)) {
-            this.subscribers.set(eventType, new Set());
+    subscribe<K extends keyof T>(eventType: K, callback: EventCallback<T[K]>): () => void {
+        if (!this.subscribers[eventType]) {
+            this.subscribers[eventType] = new Set();
         }
-        this.subscribers.get(eventType)!.add(callback as EventCallback<unknown>);
+        this.subscribers[eventType]!.add(callback);
 
         return () => {
-            this.subscribers.get(eventType)?.delete(callback as EventCallback<unknown>);
+            this.subscribers[eventType]!.delete(callback);
         };
     }
 
-    publish<Payload>(event: { type: string; payload: Payload }): void {
-        this.subscribers.get(event.type)?.forEach((callback) => {
-            // Dispatch payload to subscribers
-            (callback as EventCallback<Payload>)(event.payload);
+    publish<K extends keyof T>(event: { type: K; payload: T[K] }): void {
+        this.subscribers[event.type]?.forEach((callback) => {
+            (callback as EventCallback<T[K]>)(event.payload);
         });
     }
 }
 
-const ModuleBus = new EventBus();
+const ModuleBus = new EventBus<ModuleEventMap>();
 export default ModuleBus;

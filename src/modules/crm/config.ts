@@ -8,4 +8,11 @@ export const crmModuleConfig: ModuleConfig = {
     apiBasePath: '/api/modules/crm',
     // CORRECCIÓN: Se elimina el tipo ComponentType que no se usaba.
     UiComponent: dynamic(() => import('./ui')),
+    settingsSchema: {
+        type: 'object',
+        properties: {
+            customFields: { type: 'array', items: { type: 'string' } },
+        },
+    },
+    defaultSettings: { customFields: [] },
 };

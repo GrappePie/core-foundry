@@ -9,6 +9,7 @@ describe('useMainStore', () => {
                 isInitialized: false,
                 activeModules: [],
                 visualConfig: { positions: {}, connections: [] },
+                moduleSettings: {},
             });
         });
     });
@@ -32,6 +33,7 @@ describe('useMainStore', () => {
                     positions: { crm: { x: 1, y: 1 }, logistics: { x: 2, y: 2 } },
                     connections: [{ from: 'crm', to: 'logistics' }],
                 },
+                moduleSettings: {},
             });
         });
 
