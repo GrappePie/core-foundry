@@ -38,7 +38,7 @@ Esta experiencia inmersiva ofrece una manera intuitiva y dinámica de gestionar 
 
 Antes de comenzar, asegúrate de tener:
 
-- **Node.js** ≥ 20.x y **npm** o **Yarn**.
+- **Node.js** 20.x y **npm** o **Yarn**.
 - **Docker** y **Docker Compose**.
 - **Helm** y un clúster **Kubernetes** (p.ej. Minikube, k3s).
 - Cuenta de Docker Hub (o similar) para alojar imágenes.

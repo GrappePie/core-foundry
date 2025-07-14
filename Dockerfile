@@ -1,5 +1,5 @@
 # --- Etapa de Builder ---
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 1) Instalamos dependencias
@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # --- Etapa de Producción ---
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 # 4) Solo los artefactos que necesitamos
