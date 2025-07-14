@@ -45,6 +45,8 @@ Antes de comenzar, asegúrate de tener:
 - Variables de entorno:
     - `DATABASE_URL` (conexión a PostgreSQL)
     - `NEXTAUTH_SECRET`
+    - `NEXTAUTH_URL`
+    - `NEXTAUTH_SALT`
     - `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
 
 ---
@@ -93,6 +95,8 @@ En `.env.local` define al menos:
 ```ini
 DATABASE_URL=postgresql://user:pass@localhost:5432/corefoundry
 NEXTAUTH_SECRET=una_cadena_segura
+NEXTAUTH_URL=http://localhost:3001
+NEXTAUTH_SALT=una_cadena_segura_para_salt
 GOOGLE_CLIENT_ID=tu_id_google
 GOOGLE_CLIENT_SECRET=tu_secreto_google
 ```
