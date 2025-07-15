@@ -8,6 +8,7 @@ import { useMainStore } from '@/core/store/useMainStore';
 import ModuleBus from '@/core/bus/ModuleBus';
 import { ModuleDraggedPayload, ModuleConnectPayload, VisualConfig } from '@/lib/types';
 import { ModulesSidebar } from '@/components/ui/ModulesSidebar';
+import DashboardTour from '@/components/ui/DashboardTour';
 
 // Cargamos Phaser solo en cliente
 const PhaserCanvas = dynamic(() => import('@/components/game/PhaserCanvas'), {
@@ -38,7 +39,8 @@ export default function DashboardPage() {
         setInitialData,
         updateModulePosition,
         addConnection,
-        visualConfig
+        visualConfig,
+        activeModules,
     } = useMainStore();
     const [selectedModuleUi, setSelectedModuleUi] = useState<React.ComponentType | null>(null);
 
@@ -134,10 +136,16 @@ export default function DashboardPage() {
     // 6) Render final
     return (
         <div className="w-screen h-screen bg-background flex">
+            <DashboardTour />
             <ModulesSidebar onConfigChange={handleConfigChange} />
 
             <main className="flex-1 relative">
                 <PhaserCanvas visualConfig={visualConfig} />
+                {activeModules.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <p className="text-white text-xl">Activa un módulo para comenzar</p>
+                    </div>
+                )}
             </main>
 
             <div
