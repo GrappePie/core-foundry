@@ -11,7 +11,7 @@ export default function InvitationEmail({ tenantName, role }: Props) {
     <BaseLayout>
       <Heading>Invitación a {tenantName}</Heading>
       <Text>Has sido invitado como {role}. Haz clic en el siguiente enlace para aceptar la invitación.</Text>
-      <Link href="{process.env.NEXTAUTH_URL}">Ir a CoreFoundry</Link>
+      <Link href={`${process.env.NEXTAUTH_URL}/accept-invite`}>Aceptar invitación</Link>
     </BaseLayout>
   );
 }
