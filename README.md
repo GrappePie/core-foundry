@@ -153,7 +153,7 @@ Cada módulo (Inventario, Ventas, Informes) se despliega como servicio independi
 - `GET /api/flows`: obtiene las conexiones actuales.
 - **Auth**: rutas en `/api/auth/*` (Iniciar sesión, callback, etc.).
 
-Para más detalles, consulta la carpeta `./docs/api`.
+Puedes explorar todos los endpoints y sus esquemas de respuesta en la nueva página de documentación interactiva disponible en `/api-docs`.
 
 ---
 

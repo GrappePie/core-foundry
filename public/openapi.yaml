@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: CoreFoundry API
+  version: 1.0.0
+  description: API pública para interactuar con la plataforma CoreFoundry.
+servers:
+  - url: https://example.com
+paths:
+  /api/health:
+    get:
+      summary: Comprobar estado
+      responses:
+        '200':
+          description: La API está operativa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+  /api/tenant/me:
+    get:
+      summary: Obtener o crear tenant para el usuario actual
+      responses:
+        '200':
+          description: Datos del tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+    post:
+      summary: Actualizar tenant del usuario actual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTenantInput'
+      responses:
+        '200':
+          description: Tenant actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantResponse'
+  /api/tenant/settings:
+    post:
+      summary: Actualizar nombre del tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Tenant actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+components:
+  schemas:
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerId:
+          type: string
+        name:
+          type: string
+        activeModules:
+          type: array
+          items:
+            type: string
+        visualConfig:
+          $ref: '#/components/schemas/VisualConfig'
+    VisualConfig:
+      type: object
+      properties:
+        positions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Position'
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connection'
+    Position:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+    Connection:
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+    UpdateTenantInput:
+      type: object
+      properties:
+        activeModules:
+          type: array
+          items:
+            type: string
+        visualConfig:
+          $ref: '#/components/schemas/VisualConfig'
+    TenantResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        tenant:
+          $ref: '#/components/schemas/Tenant'

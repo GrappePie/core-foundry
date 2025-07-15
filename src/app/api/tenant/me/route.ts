@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken }             from 'next-auth/jwt';
 import { db }                   from '@/lib/db';
 import logger                   from '@/lib/logger';
-import { parseStringArray, parseVisualConfig } from '@/lib/validators';
+import { updateTenantSchema } from '@/lib/schemas';
+import { ZodError } from 'zod';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
 
@@ -43,19 +44,18 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json().catch(() => ({}));
-        const activeModules = parseStringArray(body.activeModules, 'activeModules');
-        const visualConfig = parseVisualConfig(body.visualConfig);
+        const parsed = updateTenantSchema.parse(body);
         const tenant = await db.tenant.upsert({
             where: { ownerId: token.sub },
             update: {
-                activeModules,
-                visualConfig: JSON.parse(JSON.stringify(visualConfig)),
+                activeModules: parsed.activeModules,
+                visualConfig: JSON.parse(JSON.stringify(parsed.visualConfig)),
             },
             create: {
                 ownerId: token.sub,
                 name: 'Mi Tenant',                      // igual valor por defecto
-                activeModules,
-                visualConfig: JSON.parse(JSON.stringify(visualConfig)),
+                activeModules: parsed.activeModules,
+                visualConfig: JSON.parse(JSON.stringify(parsed.visualConfig)),
             },
         });
         await db.tenantUser.upsert({
@@ -65,6 +65,9 @@ export async function POST(request: NextRequest) {
         });
         return NextResponse.json({ success: true, tenant });
     } catch (err) {
+        if (err instanceof ZodError) {
+            return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
+        }
         logger.error({ err }, "[API Tenant POST] Error upserting");
         return NextResponse.json({ error: 'Error interno' }, { status: 500 });
     }
