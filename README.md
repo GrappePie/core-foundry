@@ -25,6 +25,7 @@ Esta experiencia inmersiva ofrece una manera intuitiva y dinámica de gestionar 
 - **Autenticación Segura**: gestionada con **NextAuth.js (Auth.js v5)**.
 - **Persistencia de Datos**: Prisma ORM sobre PostgreSQL.
 - **Notificaciones por Email**: envío de correos transaccionales con **Resend** y plantillas en **React Email**.
+- **Pagos y Suscripciones**: integración con **Stripe** (Checkout, Webhooks y Portal del Cliente).
 - **Observabilidad Completa**:
     - Métricas expuestas para **Prometheus** (`/api/metrics`).
     - Logs estructurados.
