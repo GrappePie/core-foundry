@@ -54,15 +54,20 @@ export default function DashboardPage() {
         if (session && !isInitialized) {
             fetch('/api/tenant/me', {
                 method: 'GET',
-                credentials: 'include',              // ← Importante para enviar la cookie
+                credentials: 'include', // Necesario para enviar la cookie
                 headers: { 'Content-Type': 'application/json' },
             })
-                .then(res => {
+                .then((res) => {
                     if (!res.ok) throw new Error('No autorizado');
                     return res.json();
                 })
-                .then(data => setInitialData(data))
-                .catch(err => console.error('Error al cargar datos del dashboard:', err));
+                .then((data) => setInitialData(data))
+                .catch((err) => {
+                    console.error('Error al cargar datos del dashboard:', err);
+                    // Inicializamos el estado aunque falle la petición para evitar
+                    // quedar atrapados en el modo "Verificando sesión".
+                    setInitialData(null);
+                });
         }
     }, [session, status, isInitialized, setInitialData, router]);
 
