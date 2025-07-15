@@ -72,13 +72,17 @@ Antes de comenzar, asegúrate de tener:
    cp .env.example .env.local
    ```
 4. Ajusta las variables en `.env.local`.
-5. Inicia la aplicación en modo desarrollo:
+5. Levanta los contenedores con Docker Compose:
+   ```bash
+   npm run docker:up
+   ```
+6. Inicia la aplicación en modo desarrollo:
    ```bash
    npm run dev
    # o
    yarn dev
    ```
-6. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+7. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ---
 
