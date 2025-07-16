@@ -3,9 +3,10 @@ import { getToken } from 'next-auth/jwt';
 import { db } from '@/lib/db';
 
 const SECRET = process.env.NEXTAUTH_SECRET!;
+const SALT = process.env.NEXTAUTH_SALT!;
 
 export async function POST(request: NextRequest) {
-  const token = await getToken({ req: request, secret: SECRET });
+  const token = await getToken({ req: request, secret: SECRET, salt: SALT });
   if (!token?.sub) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
   const user = await db.user.findUnique({ where: { id: token.sub } });

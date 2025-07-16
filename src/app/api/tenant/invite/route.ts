@@ -5,11 +5,13 @@ import { db } from '@/lib/db';
 import { parseString } from '@/lib/validators';
 import { sendEmail } from '@/lib/email';
 import { InvitationEmail } from '@/emails';
+import { TenantRole } from '@prisma/client';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
+const SALT = process.env.NEXTAUTH_SALT!;
 
 export async function GET(request: NextRequest) {
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET, salt: SALT });
     if (!token?.sub) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
     const invites = await db.invitation.findMany({
@@ -19,14 +21,20 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET, salt: SALT });
     if (!token?.sub) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
     const body = await request.json().catch(() => ({}));
-    let email: string, role: string;
+    let email: string;
+    let rawRole: string;
+    let role: TenantRole;
     try {
         email = parseString(body.email, 'email');
-        role = parseString(body.role, 'role');
+        rawRole = parseString(body.role, 'role');
+        if (!Object.values(TenantRole).includes(rawRole as TenantRole)) {
+            return NextResponse.json({ error: 'Rol inválido' }, { status: 400 });
+        }
+        role = rawRole as TenantRole;
     } catch {
         return NextResponse.json({ error: 'Datos inválidos' }, { status: 400 });
     }

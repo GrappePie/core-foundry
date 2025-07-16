@@ -6,9 +6,10 @@ import { updateTenantSchema } from '@/lib/schemas';
 import { ZodError } from 'zod';
 
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
+const NEXTAUTH_SALT = process.env.NEXTAUTH_SALT!;
 
 export async function GET(request: NextRequest) {
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET, salt: NEXTAUTH_SALT });
     if (!token?.sub) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET, salt: NEXTAUTH_SALT });
     if (!token?.sub) {
         return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }

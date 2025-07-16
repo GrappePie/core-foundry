@@ -3,11 +3,11 @@ import Stripe from 'stripe';
 import { getToken } from 'next-auth/jwt';
 import { db } from '@/lib/db';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-04-10' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2023-10-16' });
 const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET!;
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req, secret: NEXTAUTH_SECRET });
+  const token = await getToken({ req, secret: NEXTAUTH_SECRET, salt: NEXTAUTH_SECRET });
   if (!token?.sub) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }

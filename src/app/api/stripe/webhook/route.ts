@@ -5,9 +5,7 @@ import { db } from '@/lib/db';
 import { sendEmail } from '@/lib/email';
 import { SubscriptionConfirmationEmail, BillingNotificationEmail } from '@/emails';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-04-10',
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2023-10-16' });
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -72,10 +70,15 @@ export async function POST(req: NextRequest) {
         include: { owner: true, subscription: true },
       });
       if (tenant?.owner.email) {
+        // Calcular el monto de la factura solo si latest_invoice es objeto
+        let amount = 'Tu suscripción';
+        if (sub.latest_invoice && typeof sub.latest_invoice !== 'string') {
+          amount = `$${(sub.latest_invoice.amount_paid / 100).toFixed(2)}`;
+        }
         await sendEmail({
           to: tenant.owner.email,
           subject: 'Notificación de facturación',
-          react: React.createElement(BillingNotificationEmail, { amount: sub.latest_invoice?.amount_paid ? `$${(sub.latest_invoice.amount_paid / 100).toFixed(2)}` : 'Tu suscripción' }),
+          react: React.createElement(BillingNotificationEmail, { amount }),
         });
       }
       break;

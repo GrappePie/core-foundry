@@ -4,9 +4,10 @@ import { db } from '@/lib/db';
 import { parseString } from '@/lib/validators';
 
 const SECRET = process.env.NEXTAUTH_SECRET!;
+const SALT = process.env.NEXTAUTH_SALT!;
 
 export async function GET(request: NextRequest) {
-  const token = await getToken({ req: request, secret: SECRET });
+  const token = await getToken({ req: request, secret: SECRET, salt: SALT });
   if (!token?.sub) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
   const members = await db.tenantUser.findMany({
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const token = await getToken({ req: request, secret: SECRET });
+  const token = await getToken({ req: request, secret: SECRET, salt: SALT });
   if (!token?.sub) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
