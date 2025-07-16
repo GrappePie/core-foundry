@@ -1,10 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
+import type { TenantRole } from '@/lib/types';
+
+interface Member {
+  user: {
+    id: string;
+    email: string | null;
+    name: string | null;
+  };
+  role: TenantRole;
+}
 
 export default function SettingsPage() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('EDITOR');
 
