@@ -6,7 +6,7 @@ const nextConfig = {
 
     async headers() {
         const ContentSecurityPolicy =
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://accounts.google.com; connect-src 'self';";
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://accounts.google.com; connect-src 'self';";
         return [
             {
                 source: '/(.*)',
